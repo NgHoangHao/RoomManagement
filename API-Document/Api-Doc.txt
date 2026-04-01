@@ -1,0 +1,11 @@
+ @PostMapping("/add-block"): thêm block mới
+ @GetMapping("/get-block-data/{id}"): nhận vào blockId và show toàn bộ room của block đó theo floor và những device trong mỗi phòng
+ @GetMapping("/get-all-block"): show toàn bộ block gồm id và blockName
+ @PostMapping("/add-category"):thêm category mới
+ @PostMapping("/add-device"): thêm divice mới
+ @PostMapping("/add-floor"): thêm floor mới   
+ @PostMapping("/add-room"): thêm room mới
+ @GetMapping("/get-all-room"): show toàn bộ room và những device trong mỗi phòng
+ @PostMapping("/add-roomdevice"): nhận vào roomId ,deviceId và quantity dùng để thêm thiết bị vào phòng và số lượng thiết bị trong phòng đó
+ @PutMapping("update-device-in-room"): cập nhật số lượng device có trong mỗi phòng(parameter:roomId,deviceId,quantity)
+ @DeleteMapping("delete-devide-from-room"): xóa thiết bị ra khỏi phòng đó (parameter:roomId,deviceId)
