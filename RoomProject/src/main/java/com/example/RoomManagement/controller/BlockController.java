@@ -23,11 +23,7 @@ public class BlockController {
                 .status(HttpStatus.CREATED)
                 .body(block);
     }
-    @GetMapping("/get-block-data/{id}")
-    public ResponseEntity<BlockDetailDto> getBlockDetail(@RequestParam Long id){
-        return ResponseEntity.ok(blockService.getBlockDetail(id));
-
-    }
+    
 
     @GetMapping("/get-all-block")
     public ResponseEntity<List<GetBlockDto>> getAllBlocks() {
