@@ -21,11 +21,8 @@ public class TuyaScheduler {
     public void fetchAndSave() {
         try {
             log.info("Fetching device...");
-
             var res = tuyaService.getDevice(DEVICE_ID);
-
             deviceDataService.saveFromTuya(res);
-
         } catch (Exception e) {
             log.error("Error fetch device", e);
         }

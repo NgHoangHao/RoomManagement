@@ -2,6 +2,7 @@ package com.example.RoomManagement.service;
 
 import com.example.RoomManagement.config.TuyaConfig;
 import com.example.RoomManagement.dto.response.TuyaDeviceResponse;
+import com.example.RoomManagement.dto.response.TuyaLogsResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
@@ -65,7 +66,6 @@ public class TuyaService {
 
         HttpEntity<?> entity = new HttpEntity<>(headers);
         String url = config.getBaseUrl() + path;
-        System.out.println("CALL URL: " + url);
         ResponseEntity<Map> response = restTemplate.exchange(
                 config.getBaseUrl() + path,
                 HttpMethod.GET,
@@ -131,5 +131,66 @@ public class TuyaService {
         );
 
         return response.getBody();
+    }
+
+    public TuyaLogsResponseDTO getDeviceLogs(
+            String deviceId,
+            String codes,
+            long startTime,
+            long endTime,
+            int size,
+            String lastRowKey
+    ) {
+
+        String token = getAccessToken();
+        long t = System.currentTimeMillis();
+
+        String path = "/v2.0/cloud/thing/" + deviceId + "/report-logs";
+
+        String query = String.format(
+                "codes=%s&start_time=%d&end_time=%d&size=%d",
+                codes, startTime, endTime, size
+        );
+
+        if (lastRowKey != null && !lastRowKey.isEmpty()) {
+            query += "&last_row_key=" + lastRowKey;
+        }
+
+        String url = config.getBaseUrl() + path + "?" + query;
+
+        String bodyHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+
+        String stringToSign = "GET\n" +
+                bodyHash + "\n" +
+                "\n" +
+                path + "?" + query;
+
+        String content = config.getClientId() + token + t + stringToSign;
+
+        String sign = sign(content, config.getClientSecret());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("client_id", config.getClientId());
+        headers.set("access_token", token);
+        headers.set("sign", sign);
+        headers.set("t", String.valueOf(t));
+        headers.set("sign_method", "HMAC-SHA256");
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<TuyaLogsResponseDTO> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                TuyaLogsResponseDTO.class
+        );
+
+        TuyaLogsResponseDTO body = response.getBody();
+
+        if (body == null) {
+            throw new RuntimeException("Tuya API error: " + body);
+        }
+
+        return body;
     }
 }
